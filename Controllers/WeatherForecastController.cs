@@ -1,3 +1,6 @@
+using Domain.DTOs.Common;
+using Domain.DTOs.OutputModels;
+using Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OpenManagementApi.Controllers
@@ -6,16 +9,12 @@ namespace OpenManagementApi.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
-
         private readonly ILogger<WeatherForecastController> _logger;
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        private readonly IProductServices _productServices;
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IProductServices productServices)
         {
             _logger = logger;
+            _productServices = productServices;
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
@@ -24,10 +23,17 @@ namespace OpenManagementApi.Controllers
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+                TemperatureC = Random.Shared.Next(-20, 55)
             })
             .ToArray();
         }
+
+        [HttpPost("/insert")]
+        public async Task InsertProduct([FromQuery] Product product)
+            => await _productServices.InsertProduct(product);
+
+        [HttpGet("/list")]
+        public async Task<ProductListOutputModel> GetProductList()
+            => await _productServices.GetProducts();
     }
 }
