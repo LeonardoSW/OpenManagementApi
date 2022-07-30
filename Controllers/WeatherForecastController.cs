@@ -35,5 +35,16 @@ namespace OpenManagementApi.Controllers
         [HttpGet("/list")]
         public async Task<ProductListOutputModel> GetProductList()
             => await _productServices.GetProducts();
+
+        [HttpPost("/teste")]
+        public async Task Teste(IFormFile? file)
+        {
+            var scann = new AntiVirus.Scanner();
+
+            if (file.ContentType != "application/pdf") // an options is use into fluent validation
+                await Task.Delay(1);
+
+            await Task.Delay(1);
+        }
     }
 }
